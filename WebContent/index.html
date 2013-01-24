@@ -1,0 +1,36 @@
+<head>
+	
+	<script type="text/javascript" src="js/jquery-1.7.2.js">			
+	</script>
+	<script type="text/javascript" src="js/scripts.js">
+	</script>
+	<script type="text/javascript" src="js/jquery.stream-1.2.js"></script>
+	<link rel="stylesheet" type="text/css" href="style.css" />
+	<script type="text/javascript">
+		$(document).ready(function () {
+			ws = new WebSocket("ws://localhost:8080/test/Servlet");
+			ws.onopen = function(){
+				$('.messages')[0].innerHTML += "You are succesfully connected"+"<br>";
+			};
+			ws.onmessage = function(m){
+				$('.messages')[0].innerHTML += m.data+"<br>";
+			};
+			ws.onclose = function(){
+				console.log('Socket closed: ');
+			};
+			ws.onerror = function(error){
+				console.log('Error detected: ' + error);
+			};
+			$('button').click(function () {
+				ws.send($('textarea').val());
+			});
+		});
+		
+	</script>
+</head>
+<body>
+	<div width="100%" class='header'> <B  id="#id">via @dzharvis</B></div>
+	<div class="messages">Test</div>
+	<div class="input"><textarea></textarea><button>OK</button></div>
+	
+</body>
