@@ -1,0 +1,44 @@
+.header {
+	vertical-align: middle;
+	text-align: center;
+	color: #0099CC;
+	font-size: 50px;
+	margin: 10px;
+}
+body{
+	background-color: #303030;
+}
+div{
+	text-align: center;
+}
+button{
+	border-style: none;
+	background-color: #0099CC;
+	margin-left: 10px;
+	float: right;
+	width: 50px;
+}
+.messages{
+	width: 500px;
+	margin-left: 400px;
+	padding: 10px;
+	height: 500px;
+	background-color: #CCCCCC;
+	text-align: right;
+}
+.input{
+	width: 500px;
+	margin-left: 400px;
+	padding: 10px;
+	height: auto;
+	background-color: #101010;
+	text-align: left;	
+	
+}
+textarea{
+	width: 400px;
+	height: 100px;
+	text-align: left;
+	vertical-align: top;
+	word-wrap: break-word;
+}
