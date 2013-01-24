@@ -10,8 +10,13 @@
 <link rel="stylesheet" type="text/css" href="style.css" />
 <script type="text/javascript">
 	var ws = null;
-	function sendMessage(){
-		ws.send($('textarea').val());
+	function sendMessage() {
+		
+		var msg = {nick: $('input').val(),
+				mes:  $('textarea').val()
+				};
+		
+		ws.send(JSON.stringify(msg));
 		$('textarea').val("");
 	}
 	$(document)
@@ -24,7 +29,15 @@
 									+ "<br>";
 						};
 						ws.onmessage = function(m) {
-							$('.messages')[0].innerHTML += m.data + "<br>";
+							console.log(m.data);
+							var str = m.data;
+							$('.messages')[1].innerHTML = str;
+							str = $('.messages')[1].innerHTML;
+							console.log(str);
+							var obj = jQuery.parseJSON(str.toString());
+							console.log(obj);
+							$('.messages')[0].innerHTML += obj.nick + ": "
+									+ obj.mes + "<br>";
 						};
 						ws.onclose = function() {
 
@@ -44,7 +57,7 @@
 						});
 					});
 	$(document).keydown(function(k) {
-		if(k.which == 13){
+		if (k.which == 13) {
 			sendMessage();
 		}
 		console.log(k.which);
@@ -58,8 +71,11 @@
 	</div>
 	<div class="messages"></div>
 	<div class="input">
-		<textarea></textarea>
+		<textarea class="textarea"></textarea>
+		<br> <font>Nickname: </font> <input class="nickname"></input>
 		<button>OK</button>
+
 	</div>
 
+	<div class="messages" style="visibility: hidden; position: static;"></div>
 </body>

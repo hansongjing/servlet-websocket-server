@@ -12,6 +12,10 @@ body{
 div{
 	text-align: center;
 }
+font{
+	padding: 5px;
+	color: #0099cc;
+}
 button{
 	border-style: none;
 	background-color: #0099CC;
@@ -37,10 +41,16 @@ button{
 	text-align: left;	
 	
 }
-textarea{
-	width: 400px;
+.textarea{
+	width: inherit;
 	height: 100px;
 	text-align: left;
 	vertical-align: top;
 	word-wrap: break-word;
+}
+.nickname{
+	width: 100px;
+	height: 20px;
+	text-align: left;
+	vertical-align: top;
 }

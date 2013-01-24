@@ -85,6 +85,7 @@ public class Servlet extends WebSocketServlet {
 		cb.position(0);
 		while (cb.hasRemaining()) {
 			char c = cb.get();
+			if(c == 0) return str;
 			str = (c != 0) ? (str + c) : str;
 		}
 		return str;

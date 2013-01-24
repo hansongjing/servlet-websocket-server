@@ -15,5 +15,8 @@
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="lib" path="C:/Users/Dzharvis/Downloads/jwebunit-3.1-release/jwebunit-core-3.1.jar"/>
+	<classpathentry kind="lib" path="src/gson-2.2.2-javadoc.jar"/>
+	<classpathentry kind="lib" path="src/gson-2.2.2-sources.jar"/>
+	<classpathentry kind="lib" path="src/gson-2.2.2.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
