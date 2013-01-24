@@ -23,6 +23,13 @@ import org.apache.catalina.websocket.WsOutbound;
 public class Servlet extends WebSocketServlet {
 	private static final long serialVersionUID = 1L;
 	private ArrayList<WsOutbound> sis = new ArrayList<WsOutbound>();
+	private final int CHAR_BUFFER_SIZE = 200;
+
+	// TODO remove if not debug
+	public Servlet() {
+		String str = getStringFromBuffer(getBufferFromString("str"));
+		System.out.println("str" == str);
+	}
 
 	@Override
 	protected boolean verifyOrigin(String origin) {
@@ -40,15 +47,11 @@ public class Servlet extends WebSocketServlet {
 			@Override
 			protected void onTextData(Reader reader) throws IOException {
 
-				char cb[] = new char[1000];
+				CharBuffer cb = CharBuffer.allocate(CHAR_BUFFER_SIZE);
 				reader.read(cb);
-				for (WsOutbound w : sis) {
-					for (int i = 0; i < cb.length; i++) {
-						if (cb[i] <= 0)
-							break;
-						w.writeTextData(cb[i]);
-					}
-					w.flush();
+				String str = getStringFromBuffer(cb);
+				for (int i=0; i< sis.size(); i++) {
+					if(sis.get(i)!=null) writeStringToBuffer(str, sis.get(i));
 				}
 			}
 
@@ -69,18 +72,46 @@ public class Servlet extends WebSocketServlet {
 				// TODO Auto-generated method stub
 				super.onOpen(outbound);
 				sis.add(outbound);
-				try {
-					outbound.writeTextData("A".charAt(0));
-					outbound.flush();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
 			}
 
 		};
 
 		return si;
+	}
+
+	// TODO make private
+	public String getStringFromBuffer(CharBuffer cb) {
+		String str = "";
+		cb.position(0);
+		while (cb.hasRemaining()) {
+			char c = cb.get();
+			str = (c != 0) ? (str + c) : str;
+		}
+		return str;
+	}
+
+	// TODO make private
+	public CharBuffer getBufferFromString(String str) {
+		CharBuffer cb = CharBuffer.allocate(CHAR_BUFFER_SIZE);
+		cb.put(str);
+		return cb;
+	}
+
+	// TODO make private
+	public synchronized void writeStringToBuffer(String str, WsOutbound outbound) {
+		CharBuffer cb = getBufferFromString(str);
+		cb.position(0);
+		try {
+			outbound.writeTextMessage(cb);
+			outbound.flush();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			removeListener(outbound);
+		}
+
+	}
+	private synchronized void removeListener(WsOutbound out) {
+		sis.remove(out);
 	}
 
 }

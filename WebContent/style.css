@@ -26,6 +26,7 @@ button{
 	height: 500px;
 	background-color: #CCCCCC;
 	text-align: right;
+	overflow: scroll;
 }
 .input{
 	width: 500px;
