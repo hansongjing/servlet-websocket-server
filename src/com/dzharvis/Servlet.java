@@ -25,10 +25,10 @@ public class Servlet extends WebSocketServlet {
 	private ArrayList<WsOutbound> sis = new ArrayList<WsOutbound>();
 	private final int CHAR_BUFFER_SIZE = 200;
 
-	// TODO remove if not debug
 	public Servlet() {
-		String str = getStringFromBuffer(getBufferFromString("str"));
-		System.out.println("str" == str);
+		String str = getStringFromBuffer(getBufferFromString("str"));		
+		System.out.println("str".equals(str));
+		return;
 	}
 
 	@Override
@@ -40,7 +40,6 @@ public class Servlet extends WebSocketServlet {
 	@Override
 	protected StreamInbound createWebSocketInbound(String arg0,
 			HttpServletRequest arg1) {
-		// TODO Auto-generated method stub
 		System.out.println("created");
 		StreamInbound si = new StreamInbound() {
 
@@ -79,27 +78,24 @@ public class Servlet extends WebSocketServlet {
 		return si;
 	}
 
-	// TODO make private
-	public String getStringFromBuffer(CharBuffer cb) {
-		String str = "";
+	private String getStringFromBuffer(CharBuffer cb) {
+		StringBuilder str = new StringBuilder();
 		cb.position(0);
 		while (cb.hasRemaining()) {
 			char c = cb.get();
-			if(c == 0) return str;
-			str = (c != 0) ? (str + c) : str;
+			if(c == 0) break;
+			str = (c != 0) ? (str.append(c)) : str;
 		}
-		return str;
+		return str.toString();
 	}
 
-	// TODO make private
-	public CharBuffer getBufferFromString(String str) {
-		CharBuffer cb = CharBuffer.allocate(CHAR_BUFFER_SIZE);
+	private CharBuffer getBufferFromString(String str) {
+		CharBuffer cb = CharBuffer.allocate(str.length());
 		cb.put(str);
 		return cb;
 	}
 
-	// TODO make private
-	public synchronized void writeStringToBuffer(String str, WsOutbound outbound) {
+	private void writeStringToBuffer(String str, WsOutbound outbound) {
 		CharBuffer cb = getBufferFromString(str);
 		cb.position(0);
 		try {
@@ -111,7 +107,7 @@ public class Servlet extends WebSocketServlet {
 		}
 
 	}
-	private synchronized void removeListener(WsOutbound out) {
+	private void removeListener(WsOutbound out) {
 		sis.remove(out);
 	}
 

@@ -11,11 +11,12 @@
 <script type="text/javascript">
 	var ws = null;
 	function sendMessage() {
-		
-		var msg = {nick: $('input').val(),
-				mes:  $('textarea').val()
-				};
-		
+
+		var msg = {
+			nick : $('input').val(),
+			mes : $('textarea').val()
+		};
+
 		ws.send(JSON.stringify(msg));
 		$('textarea').val("");
 	}
@@ -31,8 +32,6 @@
 						ws.onmessage = function(m) {
 							console.log(m.data);
 							var str = m.data;
-							$('.messages')[1].innerHTML = str;
-							str = $('.messages')[1].innerHTML;
 							console.log(str);
 							var obj = jQuery.parseJSON(str.toString());
 							console.log(obj);
@@ -74,8 +73,4 @@
 		<textarea class="textarea"></textarea>
 		<br> <font>Nickname: </font> <input class="nickname"></input>
 		<button>OK</button>
-
-	</div>
-
-	<div class="messages" style="visibility: hidden; position: static;"></div>
 </body>
