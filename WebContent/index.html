@@ -20,44 +20,49 @@
 		ws.send(JSON.stringify(msg));
 		$('textarea').val("");
 	}
+	function connect(){
+		ws = new WebSocket("ws://" + location.host
+				+ "/test/Servlet");
+		ws.onopen = function() {
+			$('.messages')[0].innerHTML += "You are succesfully connected"
+					+ "<br>";
+		};
+		ws.onmessage = function(m) {
+			console.log(m.data);
+			var str = m.data;
+			console.log(str);
+			var obj = jQuery.parseJSON(str.toString());
+			console.log(obj);
+			if (obj.nick.length <= 0) {
+				obj.nick = 'anonymus';
+			}
+			$('.messages')[0].innerHTML += "<font class='nicknameMessage'>"
+					+ obj.nick
+					+ "</font>: \t"
+					+ obj.mes
+					+ "<br>";
+			$(".messages")[0].scrollTop = $(".messages")[0].scrollHeight + 10;
+		};
+		ws.onclose = function() {
+
+			setTimeout(function reconnet() {
+				connect();
+			}, 1000);
+
+			console.log('Socket closed: reopenning');
+
+		};
+		ws.onerror = function(error) {
+			setTimeout(function reconnet() {
+				connect();
+			}, 1000);
+			console.log('Error detected: ' + error);
+		};
+	}
 	$(document)
 			.ready(
 					function() {
-						ws = new WebSocket("ws://" + location.host
-								+ "/test/Servlet");
-						ws.onopen = function() {
-							$('.messages')[0].innerHTML += "You are succesfully connected"
-									+ "<br>";
-						};
-						ws.onmessage = function(m) {
-							console.log(m.data);
-							var str = m.data;
-							console.log(str);
-							var obj = jQuery.parseJSON(str.toString());
-							console.log(obj);
-							if (obj.nick.length <= 0) {
-								obj.nick = 'anonymus';
-							}
-							$('.messages')[0].innerHTML += "<font class='nicknameMessage'>"
-									+ obj.nick
-									+ "</font>: \t"
-									+ obj.mes
-									+ "<br>";
-							$(".messages")[0].scrollTop = $(".messages")[0].scrollHeight + 10;
-						};
-						ws.onclose = function() {
-
-							setTimeout(function reconnet() {
-								ws = new WebSocket("ws://" + location.host
-										+ "/test/Servlet");
-							}, 1000);
-
-							console.log('Socket closed: reopenning');
-
-						};
-						ws.onerror = function(error) {
-							console.log('Error detected: ' + error);
-						};
+						connect();
 						$('button').click(function() {
 							sendMessage();
 						});
