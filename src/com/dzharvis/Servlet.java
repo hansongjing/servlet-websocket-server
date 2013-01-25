@@ -5,10 +5,7 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.nio.CharBuffer;
 import java.util.ArrayList;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingDeque;
 
-import javax.servlet.AsyncContext;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 
@@ -56,19 +53,16 @@ public class Servlet extends WebSocketServlet {
 
 			@Override
 			protected void onBinaryData(InputStream arg0) throws IOException {
-				// TODO Auto-generated method stub
 				System.out.println("bin  data");
 			}
 
 			@Override
 			protected void onClose(int status) {
-				// TODO Auto-generated method stub
 				System.out.println("closed");
 			}
 
 			@Override
 			protected void onOpen(WsOutbound outbound) {
-				// TODO Auto-generated method stub
 				super.onOpen(outbound);
 				sis.add(outbound);
 			}
@@ -102,7 +96,6 @@ public class Servlet extends WebSocketServlet {
 			outbound.writeTextMessage(cb);
 			outbound.flush();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			removeListener(outbound);
 		}
 

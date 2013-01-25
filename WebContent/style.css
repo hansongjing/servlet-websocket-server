@@ -6,49 +6,62 @@
 	margin: 10px;
 	width: 100%;
 }
-body{
+
+body {
 	background-color: #303030;
 }
-div{
+
+div {
 	text-align: center;
 }
-font{
+
+font {
 	padding: 5px;
 	color: #0099cc;
 }
-button{
+
+button {
 	border-style: none;
 	background-color: #0099CC;
 	margin-left: 10px;
 	float: right;
 	width: 50px;
 }
-.messages{
+
+.nicknameMessage{
+	color: #0099cc;
+}
+
+.messages {
 	width: 500px;
 	margin-left: 400px;
 	padding: 10px;
+	text-align: left;
 	height: 500px;
 	background-color: #CCCCCC;
-	text-align: right;
+	text-align: left;
 	overflow: scroll;
+	
 }
-.input{
+
+.input {
 	width: 500px;
 	margin-left: 400px;
 	padding: 10px;
 	height: auto;
 	background-color: #101010;
-	text-align: left;	
-	
+	text-align: left;
 }
-.textarea{
+
+.textarea {
 	width: inherit;
 	height: 100px;
 	text-align: left;
 	vertical-align: top;
 	word-wrap: break-word;
 }
-.nickname{
+
+.nickname {
 	width: 100px;
 	height: 20px;
 	text-align: left;

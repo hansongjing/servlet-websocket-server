@@ -6,7 +6,6 @@ import static net.sourceforge.jwebunit.junit.JWebUnit.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.dzharvis.Servlet;
 
 public class TestServlet {
 

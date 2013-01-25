@@ -35,8 +35,9 @@
 							console.log(str);
 							var obj = jQuery.parseJSON(str.toString());
 							console.log(obj);
-							$('.messages')[0].innerHTML += obj.nick + ": "
+							$('.messages')[0].innerHTML += "<font class='nicknameMessage'>" + obj.nick + "</font>: \t"
 									+ obj.mes + "<br>";
+							$(".messages")[0].scrollTop = $(".messages")[0].scrollHeight+10;
 						};
 						ws.onclose = function() {
 
@@ -58,8 +59,8 @@
 	$(document).keydown(function(k) {
 		if (k.which == 13) {
 			sendMessage();
+			
 		}
-		console.log(k.which);
 	});
 </script>
 </head>
@@ -73,4 +74,5 @@
 		<textarea class="textarea"></textarea>
 		<br> <font>Nickname: </font> <input class="nickname"></input>
 		<button>OK</button>
+	</div>
 </body>
