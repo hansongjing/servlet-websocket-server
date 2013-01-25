@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.nio.CharBuffer;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -20,6 +21,7 @@ import org.apache.catalina.websocket.WsOutbound;
 public class Servlet extends WebSocketServlet {
 	private static final long serialVersionUID = 1L;
 	private ArrayList<WsOutbound> sis = new ArrayList<WsOutbound>();
+	private LinkedList<String> messages = new LinkedList<String>();
 	private final int CHAR_BUFFER_SIZE = 200;
 
 	public Servlet() {
@@ -46,8 +48,16 @@ public class Servlet extends WebSocketServlet {
 				CharBuffer cb = CharBuffer.allocate(CHAR_BUFFER_SIZE);
 				reader.read(cb);
 				String str = getStringFromBuffer(cb);
+				putNewMessage(str);
 				for (int i=0; i< sis.size(); i++) {
 					if(sis.get(i)!=null) writeStringToBuffer(str, sis.get(i));
+				}
+			}
+
+			private void putNewMessage(String str) {
+				messages.add(str);
+				if(messages.size()>50){
+					messages.removeFirst();
 				}
 			}
 
@@ -65,10 +75,19 @@ public class Servlet extends WebSocketServlet {
 			protected void onOpen(WsOutbound outbound) {
 				super.onOpen(outbound);
 				sis.add(outbound);
+				for (String str : messages) {
+					try {
+						outbound.writeTextMessage(getBufferFromString(str));
+						outbound.flush();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
 			}
 
 		};
-
+		
 		return si;
 	}
 
@@ -86,6 +105,7 @@ public class Servlet extends WebSocketServlet {
 	private CharBuffer getBufferFromString(String str) {
 		CharBuffer cb = CharBuffer.allocate(str.length());
 		cb.put(str);
+		cb.position(0);
 		return cb;
 	}
 
