@@ -25,7 +25,7 @@ public class Servlet extends WebSocketServlet {
 	private final int CHAR_BUFFER_SIZE = 200;
 
 	public Servlet() {
-		String str = getStringFromBuffer(getBufferFromString("str"));		
+		String str = getStringFromBuffer(getBufferFromString("str"));
 		System.out.println("str".equals(str));
 		return;
 	}
@@ -49,14 +49,15 @@ public class Servlet extends WebSocketServlet {
 				reader.read(cb);
 				String str = getStringFromBuffer(cb);
 				putNewMessage(str);
-				for (int i=0; i< sis.size(); i++) {
-					if(sis.get(i)!=null) writeStringToBuffer(str, sis.get(i));
+				for (int i = 0; i < sis.size(); i++) {
+					if (sis.get(i) != null)
+						writeStringToBuffer(str, sis.get(i));
 				}
 			}
 
 			private void putNewMessage(String str) {
 				messages.add(str);
-				if(messages.size()>50){
+				if (messages.size() > 50) {
 					messages.removeFirst();
 				}
 			}
@@ -87,7 +88,7 @@ public class Servlet extends WebSocketServlet {
 			}
 
 		};
-		
+
 		return si;
 	}
 
@@ -96,7 +97,8 @@ public class Servlet extends WebSocketServlet {
 		cb.position(0);
 		while (cb.hasRemaining()) {
 			char c = cb.get();
-			if(c == 0) break;
+			if (c == 0)
+				break;
 			str = (c != 0) ? (str.append(c)) : str;
 		}
 		return str.toString();
@@ -120,6 +122,7 @@ public class Servlet extends WebSocketServlet {
 		}
 
 	}
+
 	private void removeListener(WsOutbound out) {
 		sis.remove(out);
 	}

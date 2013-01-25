@@ -35,12 +35,15 @@
 							console.log(str);
 							var obj = jQuery.parseJSON(str.toString());
 							console.log(obj);
-							if(obj.nick.length<=0){
+							if (obj.nick.length <= 0) {
 								obj.nick = 'anonymus';
 							}
-							$('.messages')[0].innerHTML += "<font class='nicknameMessage'>" + obj.nick + "</font>: \t"
-									+ obj.mes + "<br>";
-							$(".messages")[0].scrollTop = $(".messages")[0].scrollHeight+10;
+							$('.messages')[0].innerHTML += "<font class='nicknameMessage'>"
+									+ obj.nick
+									+ "</font>: \t"
+									+ obj.mes
+									+ "<br>";
+							$(".messages")[0].scrollTop = $(".messages")[0].scrollHeight + 10;
 						};
 						ws.onclose = function() {
 
@@ -62,7 +65,7 @@
 	$(document).keydown(function(k) {
 		if (k.which == 13) {
 			sendMessage();
-			
+
 		}
 	});
 </script>
