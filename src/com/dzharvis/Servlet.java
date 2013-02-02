@@ -11,6 +11,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -34,7 +36,8 @@ public class Servlet extends WebSocketServlet {
 	public Servlet() {
 		String str = getStringFromBuffer(getBufferFromString("str"));
 		System.out.println("str".equals(str));
-		System.out.println("str\nstr".replaceAll("\n", "").equals("strstr"));
+		System.out.println("http://center-soft.ru/img_kompany/oracle_logo.jpg".matches("jpg|bmp|gif|jpeg"));
+		
 
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
@@ -93,6 +96,21 @@ public class Servlet extends WebSocketServlet {
 				CharBuffer cb = CharBuffer.allocate(CHAR_BUFFER_SIZE);
 				reader.read(cb);
 				String str = getStringFromBuffer(cb);
+				
+				Pattern p = Pattern.compile("(http|https)://[^ \\s\"]+");
+				Matcher m = p.matcher(str);
+				System.out.println(str);
+				while(m.find()){
+					String strG = m.group();
+					
+					if(Pattern.compile("jpg|bmp|gif|jpeg").matcher(strG).find()){
+						strG = "<img src="+strG+" width=50%>";						
+					} else {
+						strG = "<a href="+strG+">"+strG+"</a>";
+					}
+					str = str.substring(0, m.start()).concat(strG).concat(str.substring(m.end(), str.length()));
+				}
+				
 				putNewMessage(str);
 				for (int i = 0; i < sis.size(); i++) {
 					if (sis.get(i) != null)
@@ -101,6 +119,8 @@ public class Servlet extends WebSocketServlet {
 			}
 
 			private void putNewMessage(String str) {
+				
+				System.out.println(str);
 				messages.add(str);
 				try {
 					stmt.executeUpdate("insert into messages (message) values ('"
