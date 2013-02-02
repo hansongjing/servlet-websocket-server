@@ -34,9 +34,9 @@
 			if (obj.nick.length <= 0) {
 				obj.nick = 'anonymus';
 			}
-			$('.messages')[0].innerHTML += "<font class='nicknameMessage'>"
+			$('.messages')[0].innerHTML += "><font class='nicknameMessage'>"
 					+ obj.nick
-					+ "</font>: \t"
+					+ "</font>: "
 					+ obj.mes
 					+ "<br>";
 			$(".messages")[0].scrollTop = $(".messages")[0].scrollHeight + 10;

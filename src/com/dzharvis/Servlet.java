@@ -115,7 +115,7 @@ public class Servlet extends WebSocketServlet {
 					String strG = m.group();
 					System.out.println(strG);
 
-					if (imgOrURL.matcher(strG).find()) {
+					if (imgOrURL.matcher(strG.toLowerCase()).find()) {
 						strG = "<img src=" + strG + " width=50%>";
 					} else {
 						strG = "<a href=" + strG + ">" + strG + "</a>";

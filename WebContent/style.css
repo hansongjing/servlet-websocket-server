@@ -12,7 +12,7 @@ body {
 }
 
 div {
-	text-align: center;
+	text-align: left;
 }
 
 font {
@@ -42,7 +42,10 @@ button {
 	text-align: left;
 	overflow: scroll;
 }
-
+.messageDiv{
+	text-align: left;
+	float: right;
+}
 .input {
 	width: 750px;
 	margin-left: 300px;
