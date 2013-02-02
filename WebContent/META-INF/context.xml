@@ -1,14 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Context>
-    <!-- Specify a JDBC datasource -->
-    <Resource name="jdbc/mysqldb"
-    auth="Container"
-       type="javax.sql.DataSource" 
-       username="root" 
-       password="24861793s"
-        driverClassName="com.mysql.jdbc.Driver"
-        url="jdbc:mysql://localhost:3307/test"
-        maxActive="10" 
-        maxIdle="4" />
- 
+	<!-- Specify a JDBC datasource -->
+	<Resource name="jdbc/mysqldb" auth="Container" type="javax.sql.DataSource"
+		username="root" password="24861793s" driverClassName="com.mysql.jdbc.Driver"
+		url="jdbc:mysql://localhost:3307/test" maxActive="10" maxIdle="4" />
+
 </Context>

@@ -19,6 +19,8 @@ import org.apache.catalina.websocket.StreamInbound;
 import org.apache.catalina.websocket.WebSocketServlet;
 import org.apache.catalina.websocket.WsOutbound;
 
+import com.google.gson.Gson;
+
 /**
  * Servlet implementation class Servlet
  */
@@ -28,11 +30,13 @@ public class Servlet extends WebSocketServlet {
 	private ArrayList<WsOutbound> sis = new ArrayList<WsOutbound>();
 	private LinkedList<String> messages = new LinkedList<String>();
 	private final int CHAR_BUFFER_SIZE = 200;
+	Connection conn = null;
+	private Statement stmt;
 
 	public Servlet() {
 		String str = getStringFromBuffer(getBufferFromString("str"));
 		System.out.println("str".equals(str));
-		Connection conn = null;
+
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 		} catch (ClassNotFoundException e1) {
@@ -53,13 +57,19 @@ public class Servlet extends WebSocketServlet {
 		} else {
 			System.out.println("probably connected");
 		}
-		 Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM akbar");
+			stmt.executeUpdate("create table if not exists messages ("+
+					"id int not null,"+
+					"message text"+
+					");");
 			
+			ResultSet rs = stmt.executeQuery("SELECT * FROM messages");
+
 			while (rs.next()) {
-				System.out.println(rs.getRow()+rs.getInt("id"));
+				System.out.println(rs.getString("message"));
+				str = rs.getString("message");
+				messages.add(str);
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -95,6 +105,13 @@ public class Servlet extends WebSocketServlet {
 
 			private void putNewMessage(String str) {
 				messages.add(str);
+				System.out.println(str);
+				try {
+					stmt.executeUpdate("insert into messages (message) values ('"+str+"')");
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} 
 				if (messages.size() > 50) {
 					messages.removeFirst();
 				}
@@ -163,6 +180,17 @@ public class Servlet extends WebSocketServlet {
 
 	private void removeListener(WsOutbound out) {
 		sis.remove(out);
+	}
+	@Override
+	public void destroy() {
+		// TODO Auto-generated method stub
+		super.destroy();
+		try {
+			conn.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }
