@@ -36,9 +36,8 @@ public class Servlet extends WebSocketServlet {
 	public Servlet() {
 		String str = getStringFromBuffer(getBufferFromString("str"));
 		System.out.println("str".equals(str));
-		System.out.println("http://center-soft.ru/img_kompany/oracle_logo.jpg".matches("jpg|bmp|gif|jpeg"));
-		
-
+		System.out.println("http://center-soft.ru/img_kompany/oracle_logo.jpg"
+				.matches("jpg|bmp|gif|jpeg"));
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 		} catch (ClassNotFoundException e1) {
@@ -96,21 +95,9 @@ public class Servlet extends WebSocketServlet {
 				CharBuffer cb = CharBuffer.allocate(CHAR_BUFFER_SIZE);
 				reader.read(cb);
 				String str = getStringFromBuffer(cb);
-				
-				Pattern p = Pattern.compile("(http|https)://[^ \\s\"]+");
-				Matcher m = p.matcher(str);
-				System.out.println(str);
-				while(m.find()){
-					String strG = m.group();
-					
-					if(Pattern.compile("jpg|bmp|gif|jpeg").matcher(strG).find()){
-						strG = "<img src="+strG+" width=50%>";						
-					} else {
-						strG = "<a href="+strG+">"+strG+"</a>";
-					}
-					str = str.substring(0, m.start()).concat(strG).concat(str.substring(m.end(), str.length()));
-				}
-				
+
+				str = findURLs(str);
+
 				putNewMessage(str);
 				for (int i = 0; i < sis.size(); i++) {
 					if (sis.get(i) != null)
@@ -118,8 +105,25 @@ public class Servlet extends WebSocketServlet {
 				}
 			}
 
+			private String findURLs(String str) {
+				Pattern url = Pattern.compile("(http|https)://[^ \\s\"]+");
+				Pattern imgOrURL = Pattern.compile("jpg|bmp|gif|jpeg");
+				Matcher m = url.matcher(str);
+				System.out.println(str);
+				while (m.find()) {
+					String strG = m.group();
+					if (imgOrURL.matcher(strG).find()) {
+						strG = "<img src=" + strG + " width=75%>";
+					} else {
+						strG = "<a href=" + strG + ">" + strG + "</a>";
+					}
+					str = str.substring(0, m.start()).concat(strG)
+							.concat(str.substring(m.end(), str.length()));
+				}
+				return str;
+			}
+
 			private void putNewMessage(String str) {
-				
 				System.out.println(str);
 				messages.add(str);
 				try {
