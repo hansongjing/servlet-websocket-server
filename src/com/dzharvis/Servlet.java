@@ -19,8 +19,6 @@ import org.apache.catalina.websocket.StreamInbound;
 import org.apache.catalina.websocket.WebSocketServlet;
 import org.apache.catalina.websocket.WsOutbound;
 
-import com.google.gson.Gson;
-
 /**
  * Servlet implementation class Servlet
  */
@@ -36,6 +34,7 @@ public class Servlet extends WebSocketServlet {
 	public Servlet() {
 		String str = getStringFromBuffer(getBufferFromString("str"));
 		System.out.println("str".equals(str));
+		System.out.println("str\nstr".replaceAll("\n", "").equals("strstr"));
 
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
@@ -59,15 +58,13 @@ public class Servlet extends WebSocketServlet {
 		}
 		try {
 			stmt = conn.createStatement();
-			stmt.executeUpdate("create table if not exists messages ("+
-					"id int not null,"+
-					"message text"+
-					");");
-			
-			ResultSet rs = stmt.executeQuery("SELECT * FROM messages");
+			stmt.executeUpdate("create table if not exists messages ("
+					+ "id int not null," + "message text" + ");");
+
+			ResultSet rs = stmt
+					.executeQuery("select * from messages order by id");
 
 			while (rs.next()) {
-				System.out.println(rs.getString("message"));
 				str = rs.getString("message");
 				messages.add(str);
 			}
@@ -105,15 +102,12 @@ public class Servlet extends WebSocketServlet {
 
 			private void putNewMessage(String str) {
 				messages.add(str);
-				System.out.println(str);
 				try {
-					stmt.executeUpdate("insert into messages (message) values ('"+str+"')");
+					stmt.executeUpdate("insert into messages (message) values ('"
+							+ str + "')");
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				} 
-				if (messages.size() > 50) {
-					messages.removeFirst();
 				}
 			}
 
@@ -131,8 +125,10 @@ public class Servlet extends WebSocketServlet {
 			protected void onOpen(WsOutbound outbound) {
 				super.onOpen(outbound);
 				sis.add(outbound);
+				System.out.println(messages.size());
 				for (String str : messages) {
 					try {
+						str = str.replaceAll("\\s+", " ");
 						outbound.writeTextMessage(getBufferFromString(str));
 						outbound.flush();
 					} catch (IOException e) {
@@ -181,6 +177,7 @@ public class Servlet extends WebSocketServlet {
 	private void removeListener(WsOutbound out) {
 		sis.remove(out);
 	}
+
 	@Override
 	public void destroy() {
 		// TODO Auto-generated method stub
