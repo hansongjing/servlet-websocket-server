@@ -106,25 +106,29 @@ public class Servlet extends WebSocketServlet {
 			}
 
 			private String findURLs(String str) {
+				StringBuffer temp = new StringBuffer();
 				Pattern url = Pattern.compile("(http|https)://[^ \\s\"]+");
 				Pattern imgOrURL = Pattern.compile("jpg|bmp|gif|jpeg");
 				Matcher m = url.matcher(str);
-				System.out.println(str);
-				while (m.find()) {
+
+				while (m.find()) {					
 					String strG = m.group();
+					System.out.println(strG);
+
 					if (imgOrURL.matcher(strG).find()) {
-						strG = "<img src=" + strG + " width=75%>";
+						strG = "<img src=" + strG + " width=50%>";
 					} else {
 						strG = "<a href=" + strG + ">" + strG + "</a>";
 					}
-					str = str.substring(0, m.start()).concat(strG)
-							.concat(str.substring(m.end(), str.length()));
+					
+					m.appendReplacement(temp, strG);
 				}
-				return str;
+				m.appendTail(temp);
+				System.out.println(temp);
+				return temp.toString();
 			}
 
 			private void putNewMessage(String str) {
-				System.out.println(str);
 				messages.add(str);
 				try {
 					stmt.executeUpdate("insert into messages (message) values ('"
