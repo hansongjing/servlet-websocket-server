@@ -4,6 +4,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.nio.CharBuffer;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
@@ -27,6 +32,39 @@ public class Servlet extends WebSocketServlet {
 	public Servlet() {
 		String str = getStringFromBuffer(getBufferFromString("str"));
 		System.out.println("str".equals(str));
+		Connection conn = null;
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+		} catch (ClassNotFoundException e1) {
+			// TODO Auto-generated catch block
+			System.out.println("Driver not founsd");
+			e1.printStackTrace();
+		}
+		try {
+			conn = DriverManager.getConnection(
+					"jdbc:mysql://localhost:3307/test", "root", "24861793s");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		if (conn == null) {
+			System.out.println(" NOT Connected to test NULL");
+		} else {
+			System.out.println("probably connected");
+		}
+		 Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM akbar");
+			
+			while (rs.next()) {
+				System.out.println(rs.getRow()+rs.getInt("id"));
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return;
 	}
 

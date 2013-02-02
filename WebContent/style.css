@@ -28,7 +28,7 @@ button {
 	width: 50px;
 }
 
-.nicknameMessage{
+.nicknameMessage {
 	color: #0099cc;
 }
 
@@ -41,7 +41,6 @@ button {
 	background-color: #CCCCCC;
 	text-align: left;
 	overflow: scroll;
-	
 }
 
 .input {
