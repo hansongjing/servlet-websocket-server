@@ -29,19 +29,14 @@ public class Servlet extends WebSocketServlet {
 	private static final long serialVersionUID = 1L;
 	private ArrayList<WsOutbound> sis = new ArrayList<WsOutbound>();
 	private LinkedList<String> messages = new LinkedList<String>();
-	private final int CHAR_BUFFER_SIZE = 200;
+	private final int CHAR_BUFFER_SIZE = 1000;
 	Connection conn = null;
 	private Statement stmt;
 
 	public Servlet() {
-		String str = getStringFromBuffer(getBufferFromString("str"));
-		System.out.println("str".equals(str));
-		System.out.println("http://center-soft.ru/img_kompany/oracle_logo.jpg"
-				.matches("jpg|bmp|gif|jpeg"));
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 		} catch (ClassNotFoundException e1) {
-			// TODO Auto-generated catch block
 			System.out.println("Driver not founsd");
 			e1.printStackTrace();
 		}
@@ -49,7 +44,6 @@ public class Servlet extends WebSocketServlet {
 			conn = DriverManager.getConnection(
 					"jdbc:mysql://localhost:3307/test", "root", "24861793s");
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -67,14 +61,21 @@ public class Servlet extends WebSocketServlet {
 					.executeQuery("select * from messages order by id");
 
 			while (rs.next()) {
-				str = rs.getString("message");
+				String str = rs.getString("message");
 				messages.add(str);
 			}
+			cutMessageBuffer();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return;
+	}
+
+	private void cutMessageBuffer() {
+		while (messages.size() > 100) {
+			messages.removeFirst();
+		}
 	}
 
 	@Override
@@ -95,37 +96,12 @@ public class Servlet extends WebSocketServlet {
 				CharBuffer cb = CharBuffer.allocate(CHAR_BUFFER_SIZE);
 				reader.read(cb);
 				String str = getStringFromBuffer(cb);
-
 				str = findURLs(str);
-
 				putNewMessage(str);
 				for (int i = 0; i < sis.size(); i++) {
 					if (sis.get(i) != null)
 						writeStringToBuffer(str, sis.get(i));
 				}
-			}
-
-			private String findURLs(String str) {
-				StringBuffer temp = new StringBuffer();
-				Pattern url = Pattern.compile("(http|https)://[^ \\s\"]+");
-				Pattern imgOrURL = Pattern.compile("jpg|bmp|gif|jpeg");
-				Matcher m = url.matcher(str);
-
-				while (m.find()) {					
-					String strG = m.group();
-					System.out.println(strG);
-
-					if (imgOrURL.matcher(strG.toLowerCase()).find()) {
-						strG = "<img src=" + strG + " width=50%>";
-					} else {
-						strG = "<a href=" + strG + ">" + strG + "</a>";
-					}
-					
-					m.appendReplacement(temp, strG);
-				}
-				m.appendTail(temp);
-				System.out.println(temp);
-				return temp.toString();
 			}
 
 			private void putNewMessage(String str) {
@@ -137,6 +113,7 @@ public class Servlet extends WebSocketServlet {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				cutMessageBuffer();
 			}
 
 			@Override
@@ -181,6 +158,29 @@ public class Servlet extends WebSocketServlet {
 			str = (c != 0) ? (str.append(c)) : str;
 		}
 		return str.toString();
+	}
+
+	private synchronized String findURLs(String str) {
+		StringBuffer temp = new StringBuffer();
+		Pattern url = Pattern.compile("(http|https)://[^ \\s\"]+");
+		Pattern imgOrURL = Pattern.compile("jpg|bmp|gif|jpeg|png");
+		Matcher m = url.matcher(str);
+
+		while (m.find()) {
+			String strG = m.group();
+			System.out.println(strG);
+
+			if (imgOrURL.matcher(strG.toLowerCase()).find()) {
+				strG = "<img src=" + strG + " width=50%>";
+			} else {
+				strG = "<a href=" + strG + ">" + strG + "</a>";
+			}
+
+			m.appendReplacement(temp, strG);
+		}
+		m.appendTail(temp);
+		System.out.println(temp);
+		return temp.toString();
 	}
 
 	private CharBuffer getBufferFromString(String str) {
