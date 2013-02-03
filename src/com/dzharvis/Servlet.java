@@ -1,5 +1,6 @@
 package com.dzharvis;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -30,7 +31,6 @@ public class Servlet extends WebSocketServlet {
 	private static final long serialVersionUID = 1L;
 	private ArrayList<WsOutbound> sis = new ArrayList<WsOutbound>();
 	private LinkedList<String> messages = new LinkedList<String>();
-	private final int CHAR_BUFFER_SIZE = 1000;
 	Connection conn = null;
 	private Statement stmt;
 
@@ -67,7 +67,6 @@ public class Servlet extends WebSocketServlet {
 			}
 			cutMessageBuffer();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return;
@@ -93,10 +92,12 @@ public class Servlet extends WebSocketServlet {
 
 			@Override
 			protected void onTextData(Reader reader) throws IOException {
-
-				CharBuffer cb = CharBuffer.allocate(CHAR_BUFFER_SIZE);
-				reader.read(cb);
-				String str = getStringFromBuffer(cb);
+				BufferedReader br = new BufferedReader(reader);
+				StringBuilder sb = new StringBuilder();
+				String str = "";
+				while ((str = br.readLine()) != null)
+					sb.append(str);
+				str = sb.toString();
 				str = findURLs(str);
 				putNewMessage(str);
 				for (int i = 0; i < sis.size(); i++) {
@@ -111,7 +112,6 @@ public class Servlet extends WebSocketServlet {
 					stmt.executeUpdate("insert into messages (message) values ('"
 							+ str + "')");
 				} catch (SQLException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				cutMessageBuffer();
@@ -138,7 +138,6 @@ public class Servlet extends WebSocketServlet {
 						outbound.writeTextMessage(getBufferFromString(str));
 						outbound.flush();
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -147,18 +146,6 @@ public class Servlet extends WebSocketServlet {
 		};
 
 		return si;
-	}
-
-	private String getStringFromBuffer(CharBuffer cb) {
-		StringBuilder str = new StringBuilder();
-		cb.position(0);
-		while (cb.hasRemaining()) {
-			char c = cb.get();
-			if (c == 0)
-				break;
-			str = (c != 0) ? (str.append(c)) : str;
-		}
-		return str.toString();
 	}
 
 	private synchronized String findURLs(String str) {
@@ -209,12 +196,10 @@ public class Servlet extends WebSocketServlet {
 
 	@Override
 	public void destroy() {
-		// TODO Auto-generated method stub
 		super.destroy();
 		try {
 			conn.close();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
