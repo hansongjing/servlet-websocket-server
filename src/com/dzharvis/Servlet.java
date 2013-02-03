@@ -84,7 +84,6 @@ public class Servlet extends WebSocketServlet {
 	protected void service(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		super.service(req, resp);
-		Log("Ip connected: " + req.getRemoteAddr());
 	}
 
 	private void cutMessageBuffer() {
@@ -100,66 +99,10 @@ public class Servlet extends WebSocketServlet {
 	}
 
 	@Override
-	protected StreamInbound createWebSocketInbound(String arg0,
-			HttpServletRequest arg1) {
-		StreamInbound si = new StreamInbound() {
-
-			@Override
-			protected void onTextData(Reader reader) throws IOException {
-				BufferedReader br = new BufferedReader(reader);
-				StringBuilder sb = new StringBuilder();
-				String str = "";
-				while ((str = br.readLine()) != null)
-					sb.append(str);
-				str = sb.toString();
-				str = findURLs(str);
-				putNewMessage(str);
-				for (int i = 0; i < sis.size(); i++) {
-					if (sis.get(i) != null)
-						writeStringToBuffer(str, sis.get(i));
-				}
-			}
-
-			private void putNewMessage(String str) {
-				messages.add(str);
-				try {
-					stmt.executeUpdate("insert into messages (message) values ('"
-							+ str + "')");
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-				cutMessageBuffer();
-			}
-
-			@Override
-			protected void onBinaryData(InputStream arg0) throws IOException {
-				Log("bin  data");
-			}
-
-			@Override
-			protected void onClose(int status) {
-				Log("closed");
-				removeListener(getWsOutbound());
-			}
-
-			@Override
-			protected void onOpen(WsOutbound outbound) {
-				super.onOpen(outbound);
-				sis.add(outbound);
-				for (String str : messages) {
-					try {
-						str = str.replaceAll("\\s+", " ");
-						outbound.writeTextMessage(getBufferFromString(str));
-						outbound.flush();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-
-		};
-
-		return si;
+	protected StreamInbound createWebSocketInbound(String str,
+			HttpServletRequest req) {
+		Log("Ip connected: " + req.getRemoteAddr());
+		return new MyStreamInbound(req.getRemoteAddr());
 	}
 
 	private synchronized String findURLs(String str) {
@@ -214,4 +157,66 @@ public class Servlet extends WebSocketServlet {
 		}
 	}
 
+	class MyStreamInbound extends StreamInbound {
+
+		private String addr;
+
+		public MyStreamInbound(String addr) {
+			this.addr = addr;
+		}
+
+		@Override
+		protected void onTextData(Reader reader) throws IOException {
+			BufferedReader br = new BufferedReader(reader);
+			StringBuilder sb = new StringBuilder();
+			String str = "";
+			while ((str = br.readLine()) != null)
+				sb.append(str);
+			str = sb.toString();
+			str = findURLs(str);
+			putNewMessage(str);
+			for (int i = 0; i < sis.size(); i++) {
+				if (sis.get(i) != null)
+					writeStringToBuffer(str, sis.get(i));
+			}
+		}
+
+		private void putNewMessage(String str) {
+			messages.add(str);
+			try {
+				stmt.executeUpdate("insert into messages (message) values ('"
+						+ str + "')");
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			cutMessageBuffer();
+		}
+
+		@Override
+		protected void onBinaryData(InputStream arg0) throws IOException {
+			Log("bin  data");
+		}
+
+		@Override
+		protected void onClose(int status) {
+			Log("Closed: " + addr);
+			removeListener(getWsOutbound());
+		}
+
+		@Override
+		protected void onOpen(WsOutbound outbound) {
+			super.onOpen(outbound);
+			sis.add(outbound);
+			for (String str : messages) {
+				try {
+					str = str.replaceAll("\\s+", " ");
+					outbound.writeTextMessage(getBufferFromString(str));
+					outbound.flush();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+	}
 }
