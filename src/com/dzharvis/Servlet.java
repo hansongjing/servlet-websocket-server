@@ -15,8 +15,10 @@ import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.catalina.websocket.StreamInbound;
 import org.apache.catalina.websocket.WebSocketServlet;
@@ -34,11 +36,13 @@ public class Servlet extends WebSocketServlet {
 	Connection conn = null;
 	private Statement stmt;
 
-	public Servlet() {
+	@Override
+	public void init() throws ServletException {
+		super.init();
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 		} catch (ClassNotFoundException e1) {
-			System.out.println("Driver not founsd");
+			System.out.println("Driver not found");
 			e1.printStackTrace();
 		}
 		try {
@@ -69,9 +73,15 @@ public class Servlet extends WebSocketServlet {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return;
 	}
-
+	
+	@Override
+	protected void service(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
+		super.service(req, resp);
+		System.out.println("Ip connected: "+req.getRemoteAddr());
+	}
+	
 	private void cutMessageBuffer() {
 		while (messages.size() > MESSAGES_QUERY_SIZE) {
 			messages.removeFirst();
@@ -80,14 +90,13 @@ public class Servlet extends WebSocketServlet {
 
 	@Override
 	protected boolean verifyOrigin(String origin) {
-		System.out.println("Origin: {}" + origin);
+		System.out.println("Origin: " + origin);
 		return true;
 	}
 
 	@Override
 	protected StreamInbound createWebSocketInbound(String arg0,
 			HttpServletRequest arg1) {
-		System.out.println("created");
 		StreamInbound si = new StreamInbound() {
 
 			@Override
@@ -163,7 +172,6 @@ public class Servlet extends WebSocketServlet {
 			} else {
 				strG = "<a href=" + strG + ">" + strG + "</a>";
 			}
-
 			m.appendReplacement(temp, strG);
 		}
 		m.appendTail(temp);
@@ -187,7 +195,6 @@ public class Servlet extends WebSocketServlet {
 		} catch (IOException e) {
 			removeListener(outbound);
 		}
-
 	}
 
 	private void removeListener(WsOutbound out) {
