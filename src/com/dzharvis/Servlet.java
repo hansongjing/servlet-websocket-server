@@ -26,6 +26,7 @@ import org.apache.catalina.websocket.WsOutbound;
  */
 @WebServlet(urlPatterns = "/Servlet", asyncSupported = true)
 public class Servlet extends WebSocketServlet {
+	private static final int MESSAGES_QUERY_SIZE = 100;
 	private static final long serialVersionUID = 1L;
 	private ArrayList<WsOutbound> sis = new ArrayList<WsOutbound>();
 	private LinkedList<String> messages = new LinkedList<String>();
@@ -73,7 +74,7 @@ public class Servlet extends WebSocketServlet {
 	}
 
 	private void cutMessageBuffer() {
-		while (messages.size() > 100) {
+		while (messages.size() > MESSAGES_QUERY_SIZE) {
 			messages.removeFirst();
 		}
 	}
