@@ -62,10 +62,8 @@ public class Servlet extends WebSocketServlet {
 			stmt = conn.createStatement();
 			stmt.executeUpdate("create table if not exists messages ("
 					+ "id int not null," + "message text" + ");");
-
 			ResultSet rs = stmt
 					.executeQuery("select * from messages order by id");
-
 			while (rs.next()) {
 				String str = rs.getString("message");
 				messages.add(str);
