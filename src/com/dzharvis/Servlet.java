@@ -11,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -42,7 +43,7 @@ public class Servlet extends WebSocketServlet {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 		} catch (ClassNotFoundException e1) {
-			System.out.println("Driver not found");
+			Log("Driver not found");
 			e1.printStackTrace();
 		}
 		try {
@@ -53,9 +54,9 @@ public class Servlet extends WebSocketServlet {
 		}
 
 		if (conn == null) {
-			System.out.println(" NOT Connected to test NULL");
+			Log(" NOT Connected to test NULL");
 		} else {
-			System.out.println("probably connected");
+			Log("probably connected");
 		}
 		try {
 			stmt = conn.createStatement();
@@ -74,14 +75,18 @@ public class Servlet extends WebSocketServlet {
 			e.printStackTrace();
 		}
 	}
-	
+
+	private void Log(String str) {
+		System.out.println(new Date().toString() + ": " + str);
+	}
+
 	@Override
 	protected void service(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		super.service(req, resp);
-		System.out.println("Ip connected: "+req.getRemoteAddr());
+		Log("Ip connected: " + req.getRemoteAddr());
 	}
-	
+
 	private void cutMessageBuffer() {
 		while (messages.size() > MESSAGES_QUERY_SIZE) {
 			messages.removeFirst();
@@ -90,7 +95,7 @@ public class Servlet extends WebSocketServlet {
 
 	@Override
 	protected boolean verifyOrigin(String origin) {
-		System.out.println("Origin: " + origin);
+		Log("Origin: " + origin);
 		return true;
 	}
 
@@ -128,19 +133,19 @@ public class Servlet extends WebSocketServlet {
 
 			@Override
 			protected void onBinaryData(InputStream arg0) throws IOException {
-				System.out.println("bin  data");
+				Log("bin  data");
 			}
 
 			@Override
 			protected void onClose(int status) {
-				System.out.println("closed");
+				Log("closed");
+				removeListener(getWsOutbound());
 			}
 
 			@Override
 			protected void onOpen(WsOutbound outbound) {
 				super.onOpen(outbound);
 				sis.add(outbound);
-				System.out.println(messages.size());
 				for (String str : messages) {
 					try {
 						str = str.replaceAll("\\s+", " ");
@@ -165,8 +170,6 @@ public class Servlet extends WebSocketServlet {
 
 		while (m.find()) {
 			String strG = m.group();
-			System.out.println(strG);
-
 			if (imgOrURL.matcher(strG.toLowerCase()).find()) {
 				strG = "<img src=" + strG + " width=50%>";
 			} else {
@@ -175,7 +178,7 @@ public class Servlet extends WebSocketServlet {
 			m.appendReplacement(temp, strG);
 		}
 		m.appendTail(temp);
-		System.out.println(temp);
+		Log(temp.toString());
 		return temp.toString();
 	}
 
