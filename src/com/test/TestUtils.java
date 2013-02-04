@@ -2,12 +2,14 @@ package com.test;
 
 import static org.junit.Assert.assertTrue;
 
+import java.nio.CharBuffer;
+
 import org.junit.Test;
 
 import com.dzharvis.Utils;
 
 
-public class TestServlet {
+public class TestUtils {
 
 	@Test
 	public void testSimpleLinks() {
@@ -29,6 +31,11 @@ public class TestServlet {
 	
 	@Test
 	public void testBufferFromString() {
+		CharBuffer cb = CharBuffer.allocate(1);
+		cb.put("q");
+		cb.position(0);	
+		assertTrue(Utils.getBufferFromString("q").equals(cb));
+		
 		assertTrue(Utils.getBufferFromString("1234567").length() == 7);
 		assertTrue(Utils.getBufferFromString("").length() == 0);
 	}
