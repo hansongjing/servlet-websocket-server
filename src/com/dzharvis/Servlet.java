@@ -53,8 +53,6 @@ public class Servlet extends WebSocketServlet {
 		return new MyStreamInbound(req.getRemoteAddr());
 	}
 
-	
-
 	private void removeListener(WsOutbound out) {
 		connectedUsers.remove(out);
 	}
@@ -83,7 +81,7 @@ public class Servlet extends WebSocketServlet {
 			str = Utils.findURLs(sb.toString());
 			putNewMessage(str);
 			for (int i = 0; i < connectedUsers.size(); i++) {
-				if (connectedUsers.get(i) != null) 
+				if (connectedUsers.get(i) != null)
 					writeToSocket(getWsOutbound(), str);
 			}
 		}
@@ -93,12 +91,13 @@ public class Servlet extends WebSocketServlet {
 			dbConnector.writeToDB(str);
 			cutMessageBuffer();
 		}
+
 		private void writeToSocket(WsOutbound outbound, String str)
 				throws IOException {
 			outbound.writeTextMessage(Utils.getBufferFromString(str));
 			outbound.flush();
 		}
-		
+
 		@Override
 		protected void onBinaryData(InputStream arg0) throws IOException {
 			Utils.log("binary  data");
@@ -123,7 +122,6 @@ public class Servlet extends WebSocketServlet {
 				}
 			}
 		}
-
 
 	}
 }

@@ -14,8 +14,7 @@ public class TestUtils {
 	public void testSimpleLinks() {
 		String link = "<a href=http://somesite.com>http://somesite.com</a>";
 		String url = "http://somesite.com";
-		
-		
+
 		StringBuilder links = new StringBuilder();
 		links.append(link).append(" ");
 		links.append(link).append("\"");
@@ -24,7 +23,7 @@ public class TestUtils {
 		links.append(link).append(" ");
 
 		links.append(link);
-		
+
 		StringBuilder raw = new StringBuilder();
 		raw.append(url).append(" ");
 		raw.append(url).append("\"");
@@ -34,10 +33,7 @@ public class TestUtils {
 		raw.append(url);
 
 		assertTrue(links.toString().equals(Utils.findURLs(raw.toString())));
-		
-		assertTrue(link
-				.equals(Utils.findURLs(url)));
-		
+		assertTrue(link.equals(Utils.findURLs(url)));
 		assertTrue("someText<a href=http://somesite.com>http://somesite.com</a> someText"
 				.equals(Utils.findURLs("someTexthttp://somesite.com someText")));
 		assertTrue("http : //somesite.com".equals(Utils

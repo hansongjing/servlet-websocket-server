@@ -8,6 +8,11 @@ import java.sql.Statement;
 import java.util.Collection;
 
 public class MyDBConnector {
+	private static final String HOST = "localhost";
+	private static final String PORT = "3307";
+	private static final String PASSWORD = "24861793s";
+	private static final String USER = "root";
+	private static final String DATA_BASE = "test";
 	Connection conn = null;
 	private Statement stmt;
 
@@ -23,14 +28,14 @@ public class MyDBConnector {
 			e1.printStackTrace();
 		}
 		try {
-			conn = DriverManager.getConnection(
-					"jdbc:mysql://localhost:3307/test", "root", "24861793s");
+			conn = DriverManager.getConnection("jdbc:mysql://" + HOST + ":"
+					+ PORT + "/" + DATA_BASE, USER, PASSWORD);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 
 		if (conn == null) {
-			Utils.log(" NOT Connected to test NULL");
+			Utils.log("NOT Connected to test NULL");
 		} else {
 			Utils.log("probably connected");
 		}
@@ -38,8 +43,9 @@ public class MyDBConnector {
 
 	public void writeToDB(String str) {
 		try {
-			stmt.executeUpdate("insert into messages (message) values ('" + str
-					+ "')");
+			stmt.executeUpdate(
+					"INSERT INTO messages (message) " +
+							"VALUES ('" + str + "')");
 		} catch (SQLException e) {
 			Utils.log("DB update is impossible");
 			e.printStackTrace();
@@ -49,10 +55,13 @@ public class MyDBConnector {
 	public void fillMessages(Collection<String> data) {
 		try {
 			stmt = conn.createStatement();
-			stmt.executeUpdate("create table if not exists messages ("
-					+ "id int not null," + "message text" + ");");
+			stmt.executeUpdate(
+					"CREATE TABLE IF NOT EXISTS messages ("
+						+ "ID INT NOT NULL," 
+						+ "message TEXT"
+					+ ");");
 			ResultSet rs = stmt
-					.executeQuery("select * from messages order by id");
+					.executeQuery("SELECT * FROM messages ORDER BY ID");
 			while (rs.next()) {
 				String str = rs.getString("message");
 				data.add(str);
