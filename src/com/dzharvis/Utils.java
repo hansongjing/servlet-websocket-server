@@ -27,7 +27,6 @@ public class Utils {
 			m.appendReplacement(temp, strG);
 		}
 		m.appendTail(temp);
-		log(temp.toString());
 		return temp.toString();
 	}
 
