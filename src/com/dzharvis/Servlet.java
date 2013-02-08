@@ -79,14 +79,18 @@ public class Servlet extends WebSocketServlet {
 			while ((str = br.readLine()) != null)
 				sb.append(str);
 			str = Utils.findURLs(sb.toString());
-			putNewMessage(str);
+			putNewMessageInQuery(str);
+			dispatchMessage(str);
+		}
+
+		private void dispatchMessage(String str) throws IOException {
 			for (int i = 0; i < connectedUsers.size(); i++) {
 				if (connectedUsers.get(i) != null)
 					writeToSocket(getWsOutbound(), str);
 			}
 		}
 
-		private void putNewMessage(String str) {
+		private void putNewMessageInQuery(String str) {
 			messagesQuery.add(str);
 			dbConnector.writeToDB(str);
 			cutMessageBuffer();

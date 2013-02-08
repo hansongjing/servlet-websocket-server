@@ -40,7 +40,7 @@ public class MyDBConnector {
 			Utils.log("probably connected");
 		}
 	}
-
+	
 	public void writeToDB(String str) {
 		try {
 			stmt.executeUpdate(
@@ -51,7 +51,7 @@ public class MyDBConnector {
 			e.printStackTrace();
 		}
 	}
-
+	
 	public void fillMessages(Collection<String> data) {
 		try {
 			stmt = conn.createStatement();
